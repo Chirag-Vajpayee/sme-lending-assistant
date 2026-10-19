@@ -1,0 +1,20 @@
+{
+  "packageDirectories": [
+    {
+      "path": "fflib/apex-mocks",
+      "default": false
+    },
+    {
+      "path": "fflib/apex-common",
+      "default": false
+    },
+    {
+      "path": "force-app",
+      "default": true
+    }
+  ],
+  "name": "sme-lending-assistant",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "63.0"
+}

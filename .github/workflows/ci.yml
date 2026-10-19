@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SF_DISABLE_TELEMETRY: "true"
+  SF_AUTOUPDATE_DISABLE: "true"
+
+jobs:
+  static-analysis:
+    name: Code Analyzer (PMD)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Install Salesforce CLI and Code Analyzer
+        run: |
+          npm install --global @salesforce/cli
+          sf plugins install @salesforce/plugin-code-analyzer
+
+      - name: Run Code Analyzer (fail on High or Critical)
+        run: |
+          sf code-analyzer run \
+            --workspace . \
+            --target force-app \
+            --rule-selector pmd \
+            --severity-threshold 2 \
+            --output-file code-analyzer-report.html \
+            --view table
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-analyzer-report
+          path: code-analyzer-report.html
+
+  apex-tests:
+    name: Deploy and test in a scratch org
+    runs-on: ubuntu-latest
+    needs: static-analysis
+    # Needs a Dev Hub auth URL saved as the repository secret DEVHUB_SFDX_AUTH_URL (see README).
+    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Salesforce CLI
+        run: npm install --global @salesforce/cli
+
+      - name: Authenticate Dev Hub
+        env:
+          DEVHUB_SFDX_AUTH_URL: ${{ secrets.DEVHUB_SFDX_AUTH_URL }}
+        run: |
+          if [ -z "$DEVHUB_SFDX_AUTH_URL" ]; then
+            echo "::error::Repository secret DEVHUB_SFDX_AUTH_URL is not set. See README > Continuous integration."
+            exit 1
+          fi
+          echo "$DEVHUB_SFDX_AUTH_URL" > devhub-auth.txt
+          sf org login sfdx-url --sfdx-url-file devhub-auth.txt --alias devhub --set-default-dev-hub
+          rm devhub-auth.txt
+
+      - name: Create scratch org
+        run: |
+          sf org create scratch \
+            --definition-file config/project-scratch-def.json \
+            --alias ci \
+            --set-default \
+            --duration-days 1 \
+            --wait 20
+
+      - name: Deploy fflib and app
+        run: sf project deploy start --target-org ci --wait 30
+
+      - name: Run Apex tests
+        run: |
+          mkdir -p test-results
+          sf apex run test \
+            --target-org ci \
+            --test-level RunLocalTests \
+            --code-coverage \
+            --result-format json \
+            --output-dir test-results \
+            --wait 30 > test-results/run.json || true
+          node scripts/check-test-results.js test-results/run.json 90
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: apex-test-results
+          path: test-results
+
+      - name: Delete scratch org
+        if: always()
+        run: sf org delete scratch --target-org ci --no-prompt || true

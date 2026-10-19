@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Document_Type__c</fullName>
+    <description>Kind of document required.</description>
+    <externalId>false</externalId>
+    <label>Document Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Financial Statements</fullName>
+                <default>false</default>
+                <label>Financial Statements</label>
+            </value>
+            <value>
+                <fullName>Bank Statements</fullName>
+                <default>false</default>
+                <label>Bank Statements</label>
+            </value>
+            <value>
+                <fullName>Tax Return</fullName>
+                <default>false</default>
+                <label>Tax Return</label>
+            </value>
+            <value>
+                <fullName>Proof of Identity</fullName>
+                <default>false</default>
+                <label>Proof of Identity</label>
+            </value>
+            <value>
+                <fullName>Business Plan</fullName>
+                <default>false</default>
+                <label>Business Plan</label>
+            </value>
+            <value>
+                <fullName>Equipment Quote</fullName>
+                <default>false</default>
+                <label>Equipment Quote</label>
+            </value>
+            <value>
+                <fullName>Property Valuation</fullName>
+                <default>false</default>
+                <label>Property Valuation</label>
+            </value>
+            <value>
+                <fullName>Existing Loan Statement</fullName>
+                <default>false</default>
+                <label>Existing Loan Statement</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
