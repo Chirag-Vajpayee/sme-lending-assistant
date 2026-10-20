@@ -41,6 +41,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <description>Full working access to the SME lending app for loan officers and underwriters.</description>
+    <externalCredentialPrincipalAccesses>
+        <enabled>true</enabled>
+        <externalCredentialPrincipal>Verification_API-Default</externalCredentialPrincipal>
+    </externalCredentialPrincipalAccesses>
     <fieldPermissions>
         <editable>true</editable>
         <field>Integration_Log__c.Duration_Ms__c</field>
