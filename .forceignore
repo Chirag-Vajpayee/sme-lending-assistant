@@ -6,3 +6,4 @@ package.xml
 **/.sfdx
 **/.sf
 **/.vscode
+**/profiles/**
