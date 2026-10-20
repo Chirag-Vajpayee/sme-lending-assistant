@@ -124,6 +124,7 @@ public with sharing class LoanApplications extends fflib_SObjectDomain implement
             registerMissingDocuments(app, uow);
             registerMissingChecks(app, uow);
             uow.registerDirty(new Loan_Application__c(Id = app.Id, Status__c = STATUS_SUBMITTED));
+            uow.registerPublishAfterSuccessTransaction(new Loan_Application_Submitted__e(Application_Id__c = app.Id));
         }
     }
 

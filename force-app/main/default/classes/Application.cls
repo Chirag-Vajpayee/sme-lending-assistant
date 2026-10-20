@@ -11,7 +11,8 @@ public inherited sharing class Application {
             Account.SObjectType,
             Loan_Application__c.SObjectType,
             Required_Document__c.SObjectType,
-            Verification_Check__c.SObjectType
+            Verification_Check__c.SObjectType,
+            Loan_Application_Submitted__e.SObjectType
         }
     );
 

@@ -129,6 +129,15 @@ private class LoanApplicationsTest {
                     }
                 )
             );
+
+         ((fflib_ISObjectUnitOfWork) mocks.verify(uow, 1))
+            .registerPublishAfterSuccessTransaction(
+                fflib_Match.sObjectWith(
+                    new Map<SObjectField, Object>{
+                        Loan_Application_Submitted__e.Application_Id__c => String.valueOf(app.Id)
+                    }
+                )
+            );
     }
 
     @IsTest
