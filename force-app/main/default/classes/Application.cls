@@ -5,7 +5,7 @@
  * what lets unit tests swap in ApexMocks stubs via setMock() without touching the database.
  */
 public inherited sharing class Application {
-    /** Unit of Work, with SObject types in dependency (insert) order. */
+    /** Unit of Work, with SObject types in dependency (insert) order. Platform events go last. */
     public static final fflib_Application.UnitOfWorkFactory UnitOfWork = new fflib_Application.UnitOfWorkFactory(
         new List<SObjectType>{
             Account.SObjectType,
@@ -18,7 +18,10 @@ public inherited sharing class Application {
 
     /** Service interface -> implementation. */
     public static final fflib_Application.ServiceFactory Service = new fflib_Application.ServiceFactory(
-        new Map<Type, Type>{ ILoanApplicationService.class => LoanApplicationServiceImpl.class }
+        new Map<Type, Type>{
+            ILoanApplicationService.class => LoanApplicationServiceImpl.class,
+            IVerificationProvider.class => HttpVerificationProvider.class
+        }
     );
 
     /** SObject -> Selector. */
